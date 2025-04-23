@@ -2,8 +2,8 @@
 ---
 title: "WebR Package Availability"
 format: 
-   html:
-     df-print: kable
+   gfm:
+    output-file: "readme.md"
 ---
 All packages that have WASM versions:
 ```{R}
@@ -21,6 +21,7 @@ all <- available.packages() |>
 ```
 Find all packages that aren't available in WASM:
 ```{R}
+#| results: "asis"
 unavailable <- setdiff(all, avail)
 popularity <- unavailable |>
     # Split the unavailable packages into groups of 500, since `cranlogs` can't handle longer vectors
@@ -35,6 +36,7 @@ popularity <- unavailable |>
     dplyr::select(package, count) |>
     dplyr::summarise(count = sum(count), .by = package) |>
     dplyr::arrange(dplyr::desc(count)) |>
-    dplyr::rename(Package = package, `Monthly Downloads` = count)
+    dplyr::rename(Package = package, `Monthly Downloads` = count) |>
+    knitr::kable()
 popularity
 ```
