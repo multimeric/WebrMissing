@@ -1,0 +1,40 @@
+
+---
+title: "WebR Package Availability"
+format: 
+   html:
+     df-print: kable
+---
+All packages that have WASM versions:
+```{R}
+avail <- available.packages(
+    contriburl = "https://repo.r-wasm.org/bin/emscripten/contrib/4.4"
+) |>
+    tibble::as_tibble() |>
+    dplyr::pull(Package)
+```
+List all packages on CRAN:
+```{R}
+all <- available.packages() |>
+    tibble::as_tibble() |>
+    dplyr::pull(Package)
+```
+Find all packages that aren't available in WASM:
+```{R}
+unavailable <- setdiff(all, avail)
+popularity <- unavailable |>
+    # Split the unavailable packages into groups of 500, since `cranlogs` can't handle longer vectors
+    seq_along() |>
+    {`/`}(500) |>
+    ceiling() |>
+    split(unavailable, f = _) |>
+    # Get the popularity of each package
+    purrr::map(cranlogs::cran_downloads, when="last-month") |>
+    purrr::list_rbind() |>
+    tibble::as_tibble() |> 
+    dplyr::select(package, count) |>
+    dplyr::summarise(count = sum(count), .by = package) |>
+    dplyr::arrange(dplyr::desc(count)) |>
+    dplyr::rename(Package = package, `Monthly Downloads` = count)
+popularity
+```
