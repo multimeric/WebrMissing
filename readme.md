@@ -1,7 +1,15 @@
 # WebR Package Availability
 
 
-All packages that have WASM versions:
+You may be interested to find which packages are compatible with WebR,
+which powers shinylive. Specifically you are probably interested in
+which *common* packages are not available, since they are more likely to
+impact you.
+
+This notebook demonstrates how to easily query this information, and
+includes a sorted list of such packages.
+
+First we find packages that have WASM versions:
 
 ``` r
 avail <- available.packages(
@@ -11,7 +19,7 @@ avail <- available.packages(
     dplyr::pull(Package)
 ```
 
-List all packages on CRAN:
+Next, we need a list of all packages on CRAN:
 
 ``` r
 all <- available.packages() |>
@@ -19,7 +27,9 @@ all <- available.packages() |>
     dplyr::pull(Package)
 ```
 
-Find all packages that aren’t available in WASM:
+Finally, we can take the difference between these to get packages that
+aren’t available in WASM. Then we can look up their popularity by number
+of downloads:
 
 ``` r
 unavailable <- setdiff(all, avail)

@@ -5,7 +5,12 @@ format:
    gfm:
     output-file: "readme.md"
 ---
-All packages that have WASM versions:
+You may be interested to find which packages are compatible with WebR, which powers shinylive.
+Specifically you are probably interested in which *common* packages are not available, since they are more likely to impact you.
+
+This notebook demonstrates how to easily query this information, and includes a sorted list of such packages.
+
+First we find packages that have WASM versions:
 ```{R}
 avail <- available.packages(
     contriburl = "https://repo.r-wasm.org/bin/emscripten/contrib/4.4"
@@ -13,13 +18,16 @@ avail <- available.packages(
     tibble::as_tibble() |>
     dplyr::pull(Package)
 ```
-List all packages on CRAN:
+
+Next, we need a list of all packages on CRAN:
 ```{R}
 all <- available.packages() |>
     tibble::as_tibble() |>
     dplyr::pull(Package)
 ```
-Find all packages that aren't available in WASM:
+
+Finally, we can take the difference between these to get packages that aren't available in WASM.
+Then we can look up their popularity by number of downloads:
 ```{R}
 #| results: "asis"
 unavailable <- setdiff(all, avail)
